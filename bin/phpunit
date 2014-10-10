@@ -1,0 +1,31 @@
+#!/bin/bash
+#PWD=`pwd`
+#if [[ $PWD == $K_HTTPD_HEADEND_SOURCE_ROOT* ]] ; then
+#    echo "$PWD"
+#    echo "$K_HTTPD_HEADEND_SOURCE_ROOT"
+#    exit 0
+#else
+#    echo "Error: You do not appear to have sourced dev_env.sh for this branch\n"
+#    echo "Sourced Branch: $K_STORE_BRANCH"
+#    exit 1
+#fi
+
+export K_STORE_DB_NAME=${K_STORE_DB_NAME}-unittest
+$K_HTTPD_PHP \
+    -c $K_HTTPD_PHP_INI                                                             \
+    -d "apc.enable_cli=1"                                                           \
+    -d "apc.cache_by_default=0"                                                     \
+    -f $K_HTTPD_HEADEND_SOURCE_ROOT/shared/scripts/phpunit.phar                     \
+    --                                                                              \
+    --configuration=$K_HTTPD_HEADEND_SOURCE_ROOT/phpunit.xml                        \
+    --include-path=$K_HTTPD_HEADEND_SOURCE_ROOT                                     \
+    $@
+
+RETVAL=$?
+if [ $RETVAL -eq 0 ]; then
+    growl "phpunit" "notification" "phpunit $@" "PHPUnit succeeded"
+else
+    growl "phpunit" "error" "phpunit $@" "PHPUnit failed"
+fi
+
+exit $RETVAL
