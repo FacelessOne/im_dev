@@ -1,5 +1,0 @@
-#!/bin/env bash
-FILE=`mktemp`
-$HOME/depot/ian.muir/bin/use.py $@ > $FILE
-source $FILE
-rm $FILE
